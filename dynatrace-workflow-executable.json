@@ -1,0 +1,37 @@
+{
+  "id": "e4bd6e5f-f19f-4d35-8e33-c4eb925d56b9",
+  "title": "EKS GitOps Auto-Remediation with PagerDuty & Observability Verification",
+  "isDeployed": true,
+  "description": "Pod failure detection and auto-remediation workflow. Edit in UI to add all 10 tasks.",
+  "actor": "fe939f6d-cb02-4c7f-b41b-3959af480bd7",
+  "owner": "fe939f6d-cb02-4c7f-b41b-3959af480bd7",
+  "ownerType": "USER",
+  "isPrivate": true,
+  "schemaVersion": 4,
+  "trigger": {
+    "type": "davis-problem"
+  },
+  "type": "SIMPLE",
+  "input": {
+    "pagerduty_api_key": "PAGERDUTY_API_KEY",
+    "dynatrace_env_url": "https://ter28835.apps.dynatrace.com",
+    "github_repo": "your-org/eks-gitops",
+    "argocd_server_url": "http://localhost:8080"
+  },
+  "hourlyExecutionLimit": 1000,
+  "guide": null,
+  "tasks": {
+    "main_task": {
+      "name": "EKS GitOps Auto-Remediation Pipeline",
+      "description": "Extract metadata, create PagerDuty incident, analyze failure, commit to git, sync with ArgoCD, and verify remediation",
+      "action": "dynatrace.run-javascript:execute",
+      "input": {
+        "script": "// Main workflow orchestrator\nconst event = event();\nconst metadata = {\n  pod_name: event['event.kubernetes_pod_name'] || 'unknown',\n  namespace: event['event.kubernetes_namespace'] || 'default',\n  cluster: event['event.kubernetes_cluster_name'] || 'unknown',\n  service: event['event.service_name'] || 'unknown',\n  severity: event['event.severity'] || 'MEDIUM',\n  failure_reason: event['event.failure_reason'] || 'Pod failure detected',\n  event_id: event['event.id'] || '',\n  timestamp: new Date().toISOString()\n};\n\nreturn {\n  status: 'workflow_started',\n  pod_metadata: metadata,\n  next_steps: [\n    '1. Create PagerDuty Incident',\n    '2. Query Dynatrace Pod Details',\n    '3. Analyze Failure Type',\n    '4. Generate Remediation Plan',\n    '5. Create Git Commit',\n    '6. Trigger ArgoCD Sync',\n    '7. Wait for Sync',\n    '8. Verify Remediation',\n    '9. Resolve or Escalate',\n    '10. Send Notification'\n  ],\n  message: `Workflow started for pod ${metadata.pod_name} in ${metadata.cluster}. Edit workflow in Dynatrace UI to add remaining tasks.`\n};"
+      },
+      "position": {
+        "x": 500,
+        "y": 100
+      }
+    }
+  }
+}

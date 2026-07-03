@@ -1,0 +1,25 @@
+# Environment variables with secrets
+.env
+.env.local
+.env.*.local
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Node modules (if using npm scripts)
+node_modules/
+
+# Credentials
+credentials.json
+*.key
+*.pem
