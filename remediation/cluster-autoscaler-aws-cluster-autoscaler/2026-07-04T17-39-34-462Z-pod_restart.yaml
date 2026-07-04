@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: restart-cluster-autoscaler-aws-cluster-autoscale
+  namespace: aiops-remediation
+  labels: { remediation-action: pod-restart, incident: dt-P-260719 }
+spec:
+  ttlSecondsAfterFinished: 300
+  backoffLimit: 1
+  template:
+    spec:
+      serviceAccountName: dynatrace-workflow
+      restartPolicy: Never
+      containers:
+      - name: kubectl
+        image: bitnami/kubectl:latest
+        command: ["kubectl", "delete", "pod", "cluster-autoscaler-aws-cluster-autoscaler", "-n", "default", "--grace-period=30"]
